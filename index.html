@@ -16,7 +16,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Header (상단바: 로고 + 다크모드 토글) -->
+    <!-- Header (로고 + 다크모드 토글) -->
     <header class="app-header">
       <div class="brand">
         <span class="brand-icon">🪽</span>
@@ -25,7 +25,7 @@
       <button id="theme-toggle" class="icon-btn" aria-label="다크 모드 전환">🌙</button>
     </header>
 
-    <!-- 작성자 / 작성 날짜 / 저장 상태 카드 -->
+    <!-- 작성자 / 날짜 카드 -->
     <section class="meta-section card">
       <div class="meta-row">
         <div class="meta-col">
@@ -73,40 +73,40 @@
 
     <!-- 일기 폼 -->
     <form id="diary-form" class="form-container">
-      <!-- Step 1: 스케줄 (세로 스택형 카드) -->
-      <fieldset class="card form-step">
-        <legend class="step-badge">🤍 step.1 스케줄</legend>
+      <!-- Step 1: 스케줄 (표 그리드 형태) -->
+      <section class="card form-step">
+        <div class="step-card-header">
+          <span class="step-badge">🤍 step.1 스케줄</span>
+        </div>
         
-        <!-- 오늘 일정 -->
-        <div class="schedule-group">
-          <div class="schedule-group-header">
-            <span class="group-title">⏰ 오늘 (⭕️❌)</span>
-          </div>
-          <div id="today-schedule-list" class="schedule-card-list">
-            <!-- JS 동적 생성 -->
-          </div>
-          <button type="button" id="add-today-row-btn" class="add-item-btn">
-            + 오늘 일정 추가
-          </button>
+        <!-- 오늘 일정 표 -->
+        <div class="schedule-table-wrap">
+          <div class="table-caption">오늘</div>
+          <table class="schedule-table today-table">
+            <tbody id="today-table-body">
+              <!-- JS 동적 행 추가 -->
+            </tbody>
+          </table>
+          <button type="button" id="add-today-row-btn" class="add-table-row-btn">일정 추가</button>
         </div>
 
-        <!-- 내일 일정 -->
-        <div class="schedule-group">
-          <div class="schedule-group-header">
-            <span class="group-title">⏰ 내일</span>
-          </div>
-          <div id="tomorrow-schedule-list" class="schedule-card-list">
-            <!-- JS 동적 생성 -->
-          </div>
-          <button type="button" id="add-tomorrow-row-btn" class="add-item-btn">
-            + 내일 일정 추가
-          </button>
+        <!-- 내일 일정 표 -->
+        <div class="schedule-table-wrap">
+          <div class="table-caption">내일</div>
+          <table class="schedule-table tomorrow-table">
+            <tbody id="tomorrow-table-body">
+              <!-- JS 동적 행 추가 -->
+            </tbody>
+          </table>
+          <button type="button" id="add-tomorrow-row-btn" class="add-table-row-btn">일정 추가</button>
         </div>
-      </fieldset>
+      </section>
 
-      <!-- Step 2: 미디어 디톡스 (예시 텍스트 제거) -->
-      <fieldset class="card form-step">
-        <legend class="step-badge">🤍 step.2 미디어 디톡스</legend>
+      <!-- Step 2: 미디어 디톡스 -->
+      <section class="card form-step">
+        <div class="step-card-header">
+          <span class="step-badge">🤍 step.2 미디어 디톡스</span>
+        </div>
         <p class="sub-legend">▫️ 오늘 사용량</p>
         <div class="input-block">
           <label for="media-search">검색 :</label>
@@ -124,11 +124,13 @@
           <label for="media-etc">기타 :</label>
           <input type="text" id="media-etc">
         </div>
-      </fieldset>
+      </section>
 
       <!-- Step 3: 묵상 -->
-      <fieldset class="card form-step">
-        <legend class="step-badge">🤍 step.3 묵상</legend>
+      <section class="card form-step">
+        <div class="step-card-header">
+          <span class="step-badge">🤍 step.3 묵상</span>
+        </div>
         <div class="input-block">
           <label for="meditation-chapter">🕯️ 성경 장</label>
           <input type="text" id="meditation-chapter">
@@ -137,11 +139,13 @@
           <label for="meditation-content">와닿은 구절 &amp; 와닿은 이유 및 느낀점</label>
           <textarea id="meditation-content" rows="4"></textarea>
         </div>
-      </fieldset>
+      </section>
 
       <!-- Step 4: 신앙일기 -->
-      <fieldset class="card form-step">
-        <legend class="step-badge">🤍 step.4 신앙일기</legend>
+      <section class="card form-step">
+        <div class="step-card-header">
+          <span class="step-badge">🤍 step.4 신앙일기</span>
+        </div>
         <div class="input-block">
           <label for="faith-emotion">• 오늘 느낀 감정의 종류</label>
           <input type="text" id="faith-emotion">
@@ -170,20 +174,22 @@
           <input type="text" id="faith-repent-1" class="mb-sm">
           <input type="text" id="faith-repent-2">
         </div>
-      </fieldset>
+      </section>
 
       <!-- Step 5: 기도문 -->
-      <fieldset class="card form-step">
-        <legend class="step-badge">🤍 step.5 기도문</legend>
+      <section class="card form-step">
+        <div class="step-card-header">
+          <span class="step-badge">🤍 step.5 기도문</span>
+        </div>
         <div class="input-block">
           <textarea id="prayer-content" rows="4"></textarea>
         </div>
         <div class="fixed-scripture">
           🧎🏻 시 62:1 나의 영혼이 잠잠히 하나님만 바람이여 나의 구원이 그에게서 나는도다
         </div>
-      </fieldset>
+      </section>
 
-      <!-- 하단 고정 액션 버튼 -->
+      <!-- 하단 액션 버튼 -->
       <div class="action-footer">
         <button type="button" id="copy-btn" class="primary-btn">작성 완료 및 복사</button>
         <button type="button" id="reset-btn" class="secondary-btn">초기화</button>
