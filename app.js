@@ -1,22 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // PWA Service Worker 등록
+  // Service Worker 등록
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log('Service Worker Registered'))
-      .catch(err => console.error('SW Registration Failed:', err));
+    navigator.serviceWorker.register('./sw.js').catch(console.error);
   }
 
-  // --- 날짜 생성 유틸 ---
   const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
   const now = new Date();
-  const defaultDateStr = `_${now.getMonth() + 1}/${now.getDate()} ${dayNames[now.getDay()]}`;
+
+  // 날짜 문자열 포맷팅 헬퍼 (_9/14 월)
+  function formatDateBadge(d) {
+    return `_${d.getMonth() + 1}/${d.getDate()} ${dayNames[d.getDay()]}`;
+  }
+
+  // 입력된 텍스트(_9/14 월 등)에서 YYYY-MM-DD 추출
+  function parseDateKey(dateStr, fallbackYear) {
+    const match = dateStr.match(/(\d{1,2})\s*[\/\.]\s*(\d{1,2})/);
+    if (match) {
+      const month = String(parseInt(match, 10)).padStart(2, '0');
+      const day = String(parseInt(match, 10)).padStart(2, '0');
+      return `${fallbackYear}-${month}-${day}`;
+    }
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  }
 
   const dateInput = document.getElementById('diary-date');
   const userNameInput = document.getElementById('user-name');
-  const saveStatus = document.getElementById('save-status');
+  const saveStatusText = document.getElementById('save-status-text');
   const toast = document.getElementById('toast');
 
-  // 요소 키 매핑
   const formFieldIds = [
     'user-name', 'diary-date',
     'schedule-today', 'schedule-tomorrow',
@@ -37,8 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   themeToggleBtn.addEventListener('click', () => {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    applyTheme(newTheme);
+    applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
   });
 
   function applyTheme(theme) {
@@ -47,11 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
     themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
     const themeMeta = document.getElementById('theme-color-meta');
     if (themeMeta) {
-      themeMeta.setAttribute('content', theme === 'dark' ? '#121417' : '#ffffff');
+      themeMeta.setAttribute('content', theme === 'dark' ? '#111318' : '#ffffff');
     }
   }
 
-  // --- 5초 자동 임시 저장 및 복구 ---
+  // --- 자동 임시 저장 & 복원 ---
   function saveDraft() {
     const draftData = {};
     formFieldIds.forEach(id => {
@@ -60,8 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     localStorage.setItem('diary_draft', JSON.stringify(draftData));
     
-    const timeStr = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    saveStatus.textContent = `자동 저장 완료 (${timeStr})`;
+    const timeStr = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    saveStatusText.textContent = `저장됨 (${timeStr})`;
   }
 
   function loadDraft() {
@@ -76,24 +86,25 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       } catch (e) {
-        console.error('Failed to parse draft:', e);
+        console.error('Draft load error:', e);
       }
     }
-    // 날짜 기본값 세팅 (비어있는 경우)
     if (!dateInput.value) {
-      dateInput.value = defaultDateStr;
+      dateInput.value = formatDateBadge(now);
     }
   }
 
   loadDraft();
   setInterval(saveDraft, 5000);
 
-  // --- Habit Tracker (달력 시스템) ---
+  // --- Habit Tracker 달력 로직 ---
   let calCurrentYear = now.getFullYear();
   let calCurrentMonth = now.getMonth(); // 0 ~ 11
 
   const calTitle = document.getElementById('calendar-title');
   const calDaysContainer = document.getElementById('calendar-days');
+  const statDone = document.getElementById('stat-done');
+  const statMissed = document.getElementById('stat-missed');
   const prevMonthBtn = document.getElementById('prev-month-btn');
   const nextMonthBtn = document.getElementById('next-month-btn');
 
@@ -110,7 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const lastDate = new Date(year, month + 1, 0).getDate();
     const completedList = getCompletedDates();
 
-    // 시작 공백
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    
+    let monthDoneCount = 0;
+    let monthMissedCount = 0;
+
+    // 첫 주 빈칸 채우기
     for (let i = 0; i < firstDayIndex; i++) {
       const emptyDiv = document.createElement('div');
       calDaysContainer.appendChild(emptyDiv);
@@ -122,19 +138,36 @@ document.addEventListener('DOMContentLoaded', () => {
       dayDiv.textContent = day;
 
       const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-      
-      // 오늘 강조
-      if (year === now.getFullYear() && month === now.getMonth() && day === now.getDate()) {
+      const isToday = (dateKey === todayStr);
+      const isPast = (dateKey < todayStr);
+      const isDone = completedList.includes(dateKey);
+
+      if (isToday) {
         dayDiv.classList.add('today');
       }
 
-      // 완료 체크 표시
-      if (completedList.includes(dateKey)) {
+      if (isDone) {
         dayDiv.classList.add('completed');
+        monthDoneCount++;
+      } else if (isPast) {
+        // 과거 날짜 중 작성 안 한 날
+        dayDiv.classList.add('missed');
+        monthMissedCount++;
       }
+
+      // 날짜 클릭 시 해당 날짜로 작성 날짜 변경
+      dayDiv.addEventListener('click', () => {
+        const targetDate = new Date(year, month, day);
+        dateInput.value = formatDateBadge(targetDate);
+        showToast(`${month + 1}월 ${day}일(${dayNames[targetDate.getDay()]})로 변경되었습니다.`);
+      });
 
       calDaysContainer.appendChild(dayDiv);
     }
+
+    // 상단 통계 뱃지 업데이트
+    statDone.textContent = `작성: ${monthDoneCount}일`;
+    statMissed.textContent = `미작성: ${monthMissedCount}일`;
   }
 
   prevMonthBtn.addEventListener('click', () => {
@@ -157,19 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   renderCalendar(calCurrentYear, calCurrentMonth);
 
-  // --- 템플릿 결합 및 클립보드 복사 ---
+  // --- 작성 완료 및 복사 ---
   const copyBtn = document.getElementById('copy-btn');
   const resetBtn = document.getElementById('reset-btn');
 
   copyBtn.addEventListener('click', async () => {
     saveDraft();
 
-    const name = userNameInput.value.trim() || '00';
-    const date = dateInput.value.trim() || defaultDateStr;
-
+    const name = userNameInput.value.trim() || '준영';
+    const date = dateInput.value.trim() || formatDateBadge(now);
     const v = (id) => document.getElementById(id)?.value || '';
 
-    // 요청된 템플릿 양식 구성 (빈 값은 빈 줄/공백 유지)
     const formattedText = `🪽${name}의 스신말기🪽 ${date}
 🤍step.1 스케줄
 ⏰오늘(⭕️❌)
@@ -213,33 +244,32 @@ ${v('faith-repent-2')}
 ${v('prayer-content')}
 🧎🏻시 62:1 나의 영혼이 잠잠히 하나님만 바람이여 나의 구원이 그에게서 나는도다`;
 
-    // 클립보드 복사 실행
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(formattedText);
       } else {
-        const tempTextArea = document.createElement('textarea');
-        tempTextArea.value = formattedText;
-        tempTextArea.style.position = 'fixed';
-        tempTextArea.style.left = '-9999px';
-        document.body.appendChild(tempTextArea);
-        tempTextArea.select();
+        const temp = document.createElement('textarea');
+        temp.value = formattedText;
+        temp.style.position = 'fixed';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.select();
         document.execCommand('copy');
-        document.body.removeChild(tempTextArea);
+        document.body.removeChild(temp);
       }
 
-      // 작성 완료 날짜 기록 (Habit Tracker)
-      const todayKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+      // 작성 날짜 파싱하여 해당 날짜를 '작성 완료' 목록에 기록
+      const targetDateKey = parseDateKey(date, calCurrentYear);
       const completedList = getCompletedDates();
-      if (!completedList.includes(todayKey)) {
-        completedList.push(todayKey);
+      if (!completedList.includes(targetDateKey)) {
+        completedList.push(targetDateKey);
         localStorage.setItem('completed_dates', JSON.stringify(completedList));
-        renderCalendar(calCurrentYear, calCurrentMonth);
       }
+      renderCalendar(calCurrentYear, calCurrentMonth);
 
-      showToast('일기가 복사되고 완료 처리되었습니다 ✅');
+      showToast('일기가 복사되고 완료(✅) 기록되었습니다.');
     } catch (err) {
-      console.error('복사 실패:', err);
+      console.error(err);
       showToast('복사 권한 오류가 발생했습니다.');
     }
   });
@@ -252,9 +282,9 @@ ${v('prayer-content')}
           if (el) el.value = '';
         }
       });
-      dateInput.value = defaultDateStr;
+      dateInput.value = formatDateBadge(now);
       localStorage.removeItem('diary_draft');
-      saveStatus.textContent = '초기화 완료';
+      saveStatusText.textContent = '초기화됨';
       showToast('내용이 초기화되었습니다.');
     }
   });
