@@ -8,7 +8,7 @@
 :root {
   --bg-color: #f7f8fa;
   --card-bg: #ffffff;
-  --table-bg: #ffffff;
+  --item-bg: #f9fafb;
   --text-main: #1f2937;
   --text-sub: #6b7280;
   --border-color: #e5e7eb;
@@ -29,7 +29,7 @@
 [data-theme="dark"] {
   --bg-color: #111318;
   --card-bg: #1a1e26;
-  --table-bg: #1e232d;
+  --item-bg: #222733;
   --text-main: #f3f4f6;
   --text-sub: #9ca3af;
   --border-color: #2b3240;
@@ -65,7 +65,7 @@ body {
 
 .app-container {
   width: 100%;
-  max-width: 440px; /* Z Flip 5 최적 폭 */
+  max-width: 440px; /* Z Flip 5 폭 최적화 */
   margin: 0 auto;
   padding: 12px;
 }
@@ -122,7 +122,7 @@ body {
   overflow: hidden;
 }
 
-/* Step 제목이 카드 칸 안에 쏙 들어가도록 개선 */
+/* Step 제목이 카드 칸 안에 쏙 들어가도록 설계 */
 .step-card-header {
   padding-bottom: 8px;
   margin-bottom: 12px;
@@ -136,7 +136,7 @@ body {
   display: block;
 }
 
-/* Meta Section */
+/* Meta Section (작성자 + 날짜) */
 .meta-row {
   display: flex;
   gap: 8px;
@@ -285,143 +285,173 @@ body {
 }
 .legend-item { display: flex; align-items: center; gap: 4px; }
 
-/* 스케줄 표(테이블) 스타일 */
-.schedule-table-wrap {
-  margin-bottom: 16px;
-  width: 100%;
+/* 🌟 스케줄 모던 카드 박스 스타일 🌟 */
+.schedule-block {
+  margin-bottom: 14px;
 }
 
-.table-caption {
-  text-align: center;
-  font-size: 0.92rem;
-  font-weight: 800;
-  margin-bottom: 6px;
+.schedule-title-bar {
+  margin-bottom: 8px;
+}
+
+.schedule-title {
+  font-size: 0.9rem;
+  font-weight: 700;
   color: var(--text-main);
 }
 
-.schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--table-bg);
-  border: 1px solid var(--border-color);
-  table-layout: fixed;
+.schedule-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-.schedule-table td {
+/* 개별 일정 항목 카드 (부드러운 라운딩 박스) */
+.schedule-card-item {
+  background-color: var(--item-bg);
   border: 1px solid var(--border-color);
-  padding: 0;
-  height: 42px;
-  vertical-align: middle;
-  text-align: center;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.2s;
 }
 
-/* 오늘 표 열 비율 */
-.today-table td:nth-child(1) { width: 38%; } /* 시간 (12:00~13:00) */
-.today-table td:nth-child(2) { width: 38%; } /* 내용 */
-.today-table td:nth-child(3) { width: 16%; } /* o/x */
-.today-table td:nth-child(4) { width: 8%; }  /* 삭제 */
-
-/* 내일 표 열 비율 */
-.tomorrow-table td:nth-child(1) { width: 21%; } /* 시작 시간 */
-.tomorrow-table td:nth-child(2) { width: 6%; }  /* ~ */
-.tomorrow-table td:nth-child(3) { width: 21%; } /* 종료 시간 */
-.tomorrow-table td:nth-child(4) { width: 44%; } /* 내용 */
-.tomorrow-table td:nth-child(5) { width: 8%; }  /* 삭제 */
-
-.cell-input {
+.item-inputs-row {
+  display: flex;
+  gap: 6px;
   width: 100%;
-  height: 100%;
-  border: none;
-  background: transparent;
+}
+
+.input-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.input-cell.time-cell {
+  width: 110px;
+  flex-shrink: 0;
+}
+
+.input-cell.time-range-cell {
+  width: 135px;
+  flex-shrink: 0;
+}
+
+.input-cell.text-cell {
+  flex: 1;
+}
+
+.cell-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-sub);
+}
+
+.cell-box-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--card-bg);
   color: var(--text-main);
-  font-size: 14px;
+  font-size: 15px;
   font-family: inherit;
-  text-align: center;
-  padding: 4px 6px;
   outline: none;
 }
-.cell-input.text-left {
-  text-align: left;
-  padding-left: 8px;
+.cell-box-input:focus {
+  border-color: var(--primary-color);
 }
 
-.cell-tilde {
-  color: var(--text-sub);
+/* 내일 일정의 [시작 ~ 종료] 감싸는 플렉스 */
+.time-range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.range-tilde {
   font-weight: 700;
+  color: var(--text-sub);
   font-size: 14px;
-  user-select: none;
+  flex-shrink: 0;
 }
 
-/* O / X 버튼 */
-.ox-cell-wrap {
+/* 카드 하단 액션 바 (O/X 토글 + 삭제 버튼) */
+.item-actions-row {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  height: 100%;
+  padding-top: 6px;
+  border-top: 1px dashed var(--border-color);
+}
+.item-actions-row.right-only {
+  justify-content: flex-end;
 }
 
-.ox-btn {
-  width: 24px;
-  height: 26px;
+.ox-btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.ox-tag-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
   border: 1px solid var(--border-color);
-  border-radius: 4px;
-  background: transparent;
+  background: var(--card-bg);
+  color: var(--text-sub);
   cursor: pointer;
-  font-size: 11px;
-  display: flex;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0;
-  opacity: 0.35;
+  gap: 3px;
   transition: all 0.15s ease;
 }
-.ox-btn.active-o {
-  opacity: 1;
+.ox-tag-btn:active { transform: scale(0.95); }
+.ox-tag-btn.active-o {
   background-color: var(--done-bg);
-  border-color: var(--done-color);
   color: var(--done-color);
+  border-color: var(--done-color);
   font-weight: 800;
 }
-.ox-btn.active-x {
-  opacity: 1;
+.ox-tag-btn.active-x {
   background-color: var(--missed-bg);
-  border-color: var(--missed-color);
   color: var(--missed-color);
+  border-color: var(--missed-color);
   font-weight: 800;
 }
 
-.del-cell-btn {
-  width: 100%;
-  height: 100%;
-  border: none;
+.item-del-btn {
   background: transparent;
+  border: none;
   color: var(--text-sub);
-  font-size: 15px;
+  font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 4px 6px;
 }
-.del-cell-btn:active {
+.item-del-btn:hover, .item-del-btn:active {
   color: #ef4444;
 }
 
-/* 표 하단에 바로 이어붙는 일정 추가 버튼 */
-.add-table-row-btn {
+.add-box-btn {
   width: 100%;
-  padding: 8px;
+  padding: 9px;
   background-color: var(--bg-color);
-  border: 1px solid var(--border-color);
-  border-top: none;
-  color: var(--text-main);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  color: var(--primary-color);
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  text-align: center;
   transition: background-color 0.15s;
 }
-.add-table-row-btn:active {
+.add-box-btn:active {
   background-color: var(--accent-color);
 }
 
@@ -445,7 +475,7 @@ body {
   margin-bottom: 5px;
 }
 
-input[type="text"]:not(.meta-input):not(.cell-input),
+input[type="text"]:not(.meta-input):not(.cell-box-input),
 textarea {
   width: 100%;
   padding: 9px 11px;
