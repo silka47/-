@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ssin-diary-v3';
+const CACHE_NAME = 'ssin-diary-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
