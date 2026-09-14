@@ -1,12 +1,12 @@
 {
-  "name": "스신말기 - 신앙 일기장",
-  "short_name": "스신말기",
-  "description": "매일의 스케줄, 미디어 사용량, 묵상, 신앙일기를 기록하고 관리하는 웹 일기장",
+  "name": "🪽",
+  "short_name": "🪽",
+  "description": "일기장",
   "start_url": "./index.html",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#111318",
+  "theme_color": "#111318",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪽</text></svg>",
