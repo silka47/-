@@ -7,7 +7,7 @@
   
   <!-- PWA & Mobile Meta -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#ffffff" id="theme-color-meta">
+  <meta name="theme-color" content="#121417" id="theme-color-meta">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -18,10 +18,15 @@
   <div class="app-container">
     <!-- Header -->
     <header class="app-header">
-      <div class="header-title-wrap">
-        <h1>🪽 <input type="text" id="user-name" value="00" class="inline-name-input">의 스신말기</h1>
+      <div class="brand">
+        <span class="brand-icon">🪽</span>
+        <h1 class="brand-title">스신말기</h1>
       </div>
-      <div class="header-actions">
+      <div class="header-right">
+        <div class="user-badge">
+          <span class="user-label">작성자</span>
+          <input type="text" id="user-name" value="준영" class="user-name-input" placeholder="이름">
+        </div>
         <button id="theme-toggle" class="icon-btn" aria-label="다크 모드 전환">🌙</button>
       </div>
     </header>
@@ -32,22 +37,36 @@
         <label for="diary-date">📅 작성 날짜</label>
         <input type="text" id="diary-date" class="date-input" placeholder="_9/14 월">
       </div>
-      <div class="status-bar">
-        <span id="save-status">자동 저장 대기 중</span>
+      <div class="status-badge" id="save-status">
+        <span class="status-dot"></span>
+        <span id="save-status-text">저장 대기 중</span>
       </div>
     </section>
 
     <!-- 미니 달력 (Habit Tracker) -->
     <section class="calendar-section card">
-      <div class="calendar-header">
-        <button id="prev-month-btn" class="cal-nav-btn">&lt;</button>
-        <h2 id="calendar-title">2026.09</h2>
-        <button id="next-month-btn" class="cal-nav-btn">&gt;</button>
+      <div class="calendar-top">
+        <div class="calendar-header">
+          <button type="button" id="prev-month-btn" class="cal-nav-btn">&lt;</button>
+          <h2 id="calendar-title">2026.09</h2>
+          <button type="button" id="next-month-btn" class="cal-nav-btn">&gt;</button>
+        </div>
+        <div class="calendar-stats">
+          <span class="stat-badge done" id="stat-done">작성: 0일</span>
+          <span class="stat-badge missed" id="stat-missed">미작성: 0일</span>
+        </div>
       </div>
+
       <div class="calendar-grid weekdays">
-        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+        <div class="sun">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="sat">토</div>
       </div>
       <div id="calendar-days" class="calendar-grid days"></div>
+
+      <div class="calendar-legend">
+        <span class="legend-item"><span class="legend-mark done">✅</span> 작성 완료</span>
+        <span class="legend-item"><span class="legend-mark today">🔵</span> 오늘</span>
+        <span class="legend-item"><span class="legend-mark missed">▫️</span> 미작성</span>
+      </div>
     </section>
 
     <!-- 일기 폼 -->
@@ -65,23 +84,23 @@
         </div>
       </fieldset>
 
-      <!-- Step 2: 미디어 디톡스 -->
+      <!-- Step 2: 미디어 디톡스 (세로 스택 정렬로 가독성 개선) -->
       <fieldset class="card form-step">
         <legend class="step-badge">🤍 step.2 미디어 디톡스</legend>
         <p class="sub-legend">▫️ 오늘 사용량</p>
-        <div class="input-row">
+        <div class="input-block">
           <label for="media-search">검색 :</label>
           <input type="text" id="media-search" placeholder="예: 30분">
         </div>
-        <div class="input-row">
+        <div class="input-block">
           <label for="media-sns">커뮤니티, SNS, 유튜브 :</label>
           <input type="text" id="media-sns" placeholder="예: 1시간">
         </div>
-        <div class="input-row">
+        <div class="input-block">
           <label for="media-video">영상물 :</label>
           <input type="text" id="media-video" placeholder="예: 0분">
         </div>
-        <div class="input-row">
+        <div class="input-block">
           <label for="media-etc">기타 :</label>
           <input type="text" id="media-etc" placeholder="예: 15분">
         </div>
