@@ -16,7 +16,7 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Header (로고 + 다크모드 토글) -->
+    <!-- Header -->
     <header class="app-header">
       <div class="brand">
         <span class="brand-icon">🪽</span>
@@ -73,32 +73,32 @@
 
     <!-- 일기 폼 -->
     <form id="diary-form" class="form-container">
-      <!-- Step 1: 스케줄 (표 그리드 형태) -->
+      <!-- Step 1: 스케줄 (자연스럽고 예쁜 카드 박스 구조) -->
       <section class="card form-step">
         <div class="step-card-header">
           <span class="step-badge">🤍 step.1 스케줄</span>
         </div>
         
-        <!-- 오늘 일정 표 -->
-        <div class="schedule-table-wrap">
-          <div class="table-caption">오늘</div>
-          <table class="schedule-table today-table">
-            <tbody id="today-table-body">
-              <!-- JS 동적 행 추가 -->
-            </tbody>
-          </table>
-          <button type="button" id="add-today-row-btn" class="add-table-row-btn">일정 추가</button>
+        <!-- 오늘 일정 영역 -->
+        <div class="schedule-block">
+          <div class="schedule-title-bar">
+            <span class="schedule-title">⏰ 오늘 (⭕️❌)</span>
+          </div>
+          <div id="today-schedule-list" class="schedule-items-container">
+            <!-- JS 동적 생성 -->
+          </div>
+          <button type="button" id="add-today-row-btn" class="add-box-btn">+ 오늘 일정 추가</button>
         </div>
 
-        <!-- 내일 일정 표 -->
-        <div class="schedule-table-wrap">
-          <div class="table-caption">내일</div>
-          <table class="schedule-table tomorrow-table">
-            <tbody id="tomorrow-table-body">
-              <!-- JS 동적 행 추가 -->
-            </tbody>
-          </table>
-          <button type="button" id="add-tomorrow-row-btn" class="add-table-row-btn">일정 추가</button>
+        <!-- 내일 일정 영역 -->
+        <div class="schedule-block">
+          <div class="schedule-title-bar">
+            <span class="schedule-title">⏰ 내일</span>
+          </div>
+          <div id="tomorrow-schedule-list" class="schedule-items-container">
+            <!-- JS 동적 생성 -->
+          </div>
+          <button type="button" id="add-tomorrow-row-btn" class="add-box-btn">+ 내일 일정 추가</button>
         </div>
       </section>
 
