@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>🪽</title>
+  
+  <!-- PWA & Mobile Meta -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ffffff" id="theme-color-meta">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-title-wrap">
+        <h1>🪽 <input type="text" id="user-name" value="00" class="inline-name-input">의 스신말기</h1>
+      </div>
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-btn" aria-label="다크 모드 전환">🌙</button>
+      </div>
+    </header>
+
+    <!-- 날짜 입력 & 자동 저장 알림 바 -->
+    <section class="meta-section card">
+      <div class="date-input-group">
+        <label for="diary-date">📅 작성 날짜</label>
+        <input type="text" id="diary-date" class="date-input" placeholder="_9/14 월">
+      </div>
+      <div class="status-bar">
+        <span id="save-status">자동 저장 대기 중</span>
+      </div>
+    </section>
+
+    <!-- 미니 달력 (Habit Tracker) -->
+    <section class="calendar-section card">
+      <div class="calendar-header">
+        <button id="prev-month-btn" class="cal-nav-btn">&lt;</button>
+        <h2 id="calendar-title">2026.09</h2>
+        <button id="next-month-btn" class="cal-nav-btn">&gt;</button>
+      </div>
+      <div class="calendar-grid weekdays">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div id="calendar-days" class="calendar-grid days"></div>
+    </section>
+
+    <!-- 일기 폼 -->
+    <form id="diary-form" class="form-container">
+      <!-- Step 1: 스케줄 -->
+      <fieldset class="card form-step">
+        <legend class="step-badge">🤍 step.1 스케줄</legend>
+        <div class="input-block">
+          <label for="schedule-today">⏰ 오늘 (⭕️❌)</label>
+          <textarea id="schedule-today" rows="3" placeholder="오늘 일정과 달성 여부(⭕️, ❌)를 입력하세요."></textarea>
+        </div>
+        <div class="input-block">
+          <label for="schedule-tomorrow">⏰ 내일</label>
+          <textarea id="schedule-tomorrow" rows="2" placeholder="내일 예정된 일정을 입력하세요."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Step 2: 미디어 디톡스 -->
+      <fieldset class="card form-step">
+        <legend class="step-badge">🤍 step.2 미디어 디톡스</legend>
+        <p class="sub-legend">▫️ 오늘 사용량</p>
+        <div class="input-row">
+          <label for="media-search">검색 :</label>
+          <input type="text" id="media-search" placeholder="예: 30분">
+        </div>
+        <div class="input-row">
+          <label for="media-sns">커뮤니티, SNS, 유튜브 :</label>
+          <input type="text" id="media-sns" placeholder="예: 1시간">
+        </div>
+        <div class="input-row">
+          <label for="media-video">영상물 :</label>
+          <input type="text" id="media-video" placeholder="예: 0분">
+        </div>
+        <div class="input-row">
+          <label for="media-etc">기타 :</label>
+          <input type="text" id="media-etc" placeholder="예: 15분">
+        </div>
+      </fieldset>
+
+      <!-- Step 3: 묵상 -->
+      <fieldset class="card form-step">
+        <legend class="step-badge">🤍 step.3 묵상</legend>
+        <div class="input-block">
+          <label for="meditation-chapter">🕯️ 성경 장</label>
+          <input type="text" id="meditation-chapter" placeholder="예: 시편 62장">
+        </div>
+        <div class="input-block">
+          <label for="meditation-content">와닿은 구절 &amp; 와닿은 이유 및 느낀점</label>
+          <textarea id="meditation-content" rows="4" placeholder="말씀 구절과 묵상 내용을 자유롭게 기록하세요."></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Step 4: 신앙일기 -->
+      <fieldset class="card form-step">
+        <legend class="step-badge">🤍 step.4 신앙일기</legend>
+        <div class="input-block">
+          <label for="faith-emotion">• 오늘 느낀 감정의 종류</label>
+          <input type="text" id="faith-emotion" placeholder="예: 평안, 조급함, 감사 등">
+        </div>
+        <div class="input-block">
+          <label for="faith-situation">감정을 느낀 상황은 무엇인가요?</label>
+          <textarea id="faith-situation" rows="2" placeholder="상황을 적어주세요."></textarea>
+        </div>
+        <div class="input-block">
+          <label for="faith-desire">나의 본심찾기 (나의 욕구:내가 원한 것)</label>
+          <textarea id="faith-desire" rows="2" placeholder="마음속 진짜 욕구를 적어주세요."></textarea>
+        </div>
+        <div class="input-block">
+          <label for="faith-lesson">이 일을 통해 하나님께서 내게 알려주시고 싶으신 것은 무엇이었을까? (하나님의 도우심, 깨달은 점)</label>
+          <textarea id="faith-lesson" rows="3" placeholder="깨달은 점을 적어주세요."></textarea>
+        </div>
+        
+        <div class="sub-group">
+          <span class="sub-label">💛 감사한 점</span>
+          <input type="text" id="faith-gratitude-1" class="mb-sm" placeholder="1. 감사한 점">
+          <input type="text" id="faith-gratitude-2" placeholder="2. 감사한 점">
+        </div>
+
+        <div class="sub-group">
+          <span class="sub-label">🙏🏻 회개할 점</span>
+          <input type="text" id="faith-repent-1" class="mb-sm" placeholder="1. 회개할 점">
+          <input type="text" id="faith-repent-2" placeholder="2. 회개할 점">
+        </div>
+      </fieldset>
+
+      <!-- Step 5: 기도문 -->
+      <fieldset class="card form-step">
+        <legend class="step-badge">🤍 step.5 기도문</legend>
+        <div class="input-block">
+          <textarea id="prayer-content" rows="4" placeholder="하나님께 드리는 솔직한 기도를 작성하세요."></textarea>
+        </div>
+        <div class="fixed-scripture">
+          🧎🏻 시 62:1 나의 영혼이 잠잠히 하나님만 바람이여 나의 구원이 그에게서 나는도다
+        </div>
+      </fieldset>
+
+      <!-- 버튼 영역 -->
+      <div class="action-footer">
+        <button type="button" id="copy-btn" class="primary-btn">작성 완료 및 복사</button>
+        <button type="button" id="reset-btn" class="secondary-btn">초기화</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toast" class="toast">클립보드에 복사되었습니다.</div>
+
+  <script src="app.js"></script>
+</body>
+</html>
