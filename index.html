@@ -71,20 +71,38 @@
 
     <!-- 일기 폼 -->
     <form id="diary-form" class="form-container">
-      <!-- Step 1: 스케줄 -->
+      <!-- Step 1: 스케줄 (행 분리 및 버튼식 O/X 토글) -->
       <fieldset class="card form-step">
         <legend class="step-badge">🤍 step.1 스케줄</legend>
-        <div class="input-block">
-          <label for="schedule-today">⏰ 오늘 (⭕️❌)</label>
-          <textarea id="schedule-today" rows="3" placeholder="오늘 일정과 달성 여부(⭕️, ❌)를 입력하세요."></textarea>
+        
+        <!-- 오늘 일정 -->
+        <div class="schedule-block">
+          <div class="schedule-block-header">
+            <span class="schedule-title">⏰ 오늘 (⭕️❌)</span>
+          </div>
+          <div id="today-schedule-list" class="schedule-list">
+            <!-- 자바스크립트로 동적 생성 -->
+          </div>
+          <button type="button" id="add-today-row-btn" class="add-row-btn">
+            + 오늘 일정 추가
+          </button>
         </div>
-        <div class="input-block">
-          <label for="schedule-tomorrow">⏰ 내일</label>
-          <textarea id="schedule-tomorrow" rows="2" placeholder="내일 예정된 일정을 입력하세요."></textarea>
+
+        <!-- 내일 일정 -->
+        <div class="schedule-block">
+          <div class="schedule-block-header">
+            <span class="schedule-title">⏰ 내일</span>
+          </div>
+          <div id="tomorrow-schedule-list" class="schedule-list">
+            <!-- 자바스크립트로 동적 생성 -->
+          </div>
+          <button type="button" id="add-tomorrow-row-btn" class="add-row-btn">
+            + 내일 일정 추가
+          </button>
         </div>
       </fieldset>
 
-      <!-- Step 2: 미디어 디톡스 (세로 스택 정렬로 가독성 개선) -->
+      <!-- Step 2: 미디어 디톡스 -->
       <fieldset class="card form-step">
         <legend class="step-badge">🤍 step.2 미디어 디톡스</legend>
         <p class="sub-legend">▫️ 오늘 사용량</p>
@@ -163,7 +181,7 @@
         </div>
       </fieldset>
 
-      <!-- 버튼 영역 -->
+      <!-- 하단 고정 액션 버튼 -->
       <div class="action-footer">
         <button type="button" id="copy-btn" class="primary-btn">작성 완료 및 복사</button>
         <button type="button" id="reset-btn" class="secondary-btn">초기화</button>
