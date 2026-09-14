@@ -1,0 +1,358 @@
+:root {
+  --bg-color: #f7f8fa;
+  --card-bg: #ffffff;
+  --text-main: #2d3748;
+  --text-sub: #718096;
+  --border-color: #e2e8f0;
+  --primary-color: #4a6cf7;
+  --primary-hover: #3b5bdb;
+  --accent-color: #eef2ff;
+  --success-color: #10b981;
+  --cal-today-bg: #e0e7ff;
+  --cal-done-badge: #10b981;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+}
+
+[data-theme="dark"] {
+  --bg-color: #121417;
+  --card-bg: #1e2229;
+  --text-main: #f3f4f6;
+  --text-sub: #9ca3af;
+  --border-color: #2e3542;
+  --primary-color: #6366f1;
+  --primary-hover: #4f46e5;
+  --accent-color: #252b3b;
+  --cal-today-bg: #312e81;
+  --shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding-bottom: 60px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.app-container {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Header */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0 16px;
+}
+
+.header-title-wrap h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.inline-name-input {
+  border: none;
+  border-bottom: 2px dashed var(--primary-color);
+  background: transparent;
+  color: var(--text-main);
+  font-size: 1.2rem;
+  font-weight: 700;
+  width: 52px;
+  text-align: center;
+}
+.inline-name-input:focus {
+  outline: none;
+  border-bottom-style: solid;
+}
+
+.icon-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card Common */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* Meta Section */
+.meta-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date-input-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+.date-input {
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  width: 110px;
+}
+
+.status-bar {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+
+/* Calendar */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.calendar-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.cal-nav-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  row-gap: 6px;
+}
+
+.weekdays {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+}
+
+.days div {
+  font-size: 0.85rem;
+  padding: 6px 0;
+  border-radius: 8px;
+  min-height: 38px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.days div.today {
+  background-color: var(--cal-today-bg);
+  font-weight: 700;
+}
+
+.days div.completed::after {
+  content: "✅";
+  font-size: 0.65rem;
+  line-height: 1;
+  position: absolute;
+  bottom: 2px;
+}
+
+/* Form Styles */
+.form-step {
+  padding-top: 14px;
+}
+
+.step-badge {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  padding: 0 6px;
+}
+
+.sub-legend {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+}
+
+.input-block {
+  margin-bottom: 12px;
+}
+
+.input-block label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: var(--text-main);
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.input-row label {
+  font-size: 0.85rem;
+  flex: 1;
+}
+
+.input-row input {
+  width: 140px;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+textarea {
+  resize: vertical;
+}
+
+.sub-group {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.sub-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mb-sm {
+  margin-bottom: 6px;
+}
+
+.fixed-scripture {
+  font-size: 0.8rem;
+  color: var(--text-sub);
+  background-color: var(--accent-color);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 8px;
+  text-align: center;
+  word-break: keep-all;
+}
+
+/* Footer & Buttons */
+.action-footer {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.primary-btn {
+  flex: 2;
+  background-color: var(--primary-color);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(74, 108, 247, 0.3);
+}
+
+.primary-btn:active {
+  background-color: var(--primary-hover);
+}
+
+.secondary-btn {
+  flex: 1;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-sub);
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Toast Notification */
+.toast {
+  visibility: hidden;
+  min-width: 220px;
+  background-color: rgba(30, 41, 59, 0.95);
+  color: #fff;
+  text-align: center;
+  border-radius: 25px;
+  padding: 12px 20px;
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.3s, visibility 0.3s;
+}
+
+.toast.show {
+  visibility: visible;
+  opacity: 1;
+}
