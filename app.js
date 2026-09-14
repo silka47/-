@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveStatusText = document.getElementById('save-status-text');
   const toast = document.getElementById('toast');
 
-  const todayList = document.getElementById('today-schedule-list');
-  const tomorrowList = document.getElementById('tomorrow-schedule-list');
+  const todayBody = document.getElementById('today-table-body');
+  const tomorrowBody = document.getElementById('tomorrow-table-body');
   const addTodayBtn = document.getElementById('add-today-row-btn');
   const addTomorrowBtn = document.getElementById('add-tomorrow-row-btn');
 
@@ -69,179 +69,214 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- 2. 스케줄 세로형 카드 생성 함수 ---
-  function createScheduleCard(item = { time: '', text: '', status: '' }, isToday = true) {
-    const card = document.createElement('div');
-    card.className = 'schedule-item-card';
-    card.dataset.status = item.status || '';
+  // --- 2. 오늘 일정 표 행 생성 (시간 | 내용 | O/X | ✕) ---
+  function createTodayRow(item = { time: '', text: '', status: '' }) {
+    const tr = document.createElement('tr');
+    tr.dataset.status = item.status || '';
 
-    // 시간 입력부
-    const timeField = document.createElement('div');
-    timeField.className = 'schedule-field';
-    const timeLabel = document.createElement('label');
-    timeLabel.className = 'field-label';
-    timeLabel.textContent = '시간';
+    // 시간 칸
+    const tdTime = document.createElement('td');
     const timeInput = document.createElement('input');
     timeInput.type = 'text';
-    timeInput.className = 'schedule-input schedule-time';
+    timeInput.className = 'cell-input today-time-input';
     timeInput.value = item.time || '';
     timeInput.addEventListener('input', saveDraft);
-    timeField.appendChild(timeLabel);
-    timeField.appendChild(timeInput);
+    tdTime.appendChild(timeInput);
 
-    // 내용 입력부
-    const textField = document.createElement('div');
-    textField.className = 'schedule-field';
-    const textLabel = document.createElement('label');
-    textLabel.className = 'field-label';
-    textLabel.textContent = '내용';
+    // 내용 칸
+    const tdText = document.createElement('td');
     const textInput = document.createElement('input');
     textInput.type = 'text';
-    textInput.className = 'schedule-input schedule-text';
+    textInput.className = 'cell-input text-left today-text-input';
     textInput.value = item.text || '';
     textInput.addEventListener('input', saveDraft);
-    textField.appendChild(textLabel);
-    textField.appendChild(textInput);
+    tdText.appendChild(textInput);
 
-    // 하단 바 (토글 및 삭제)
-    const bottomBar = document.createElement('div');
-    bottomBar.className = 'schedule-bottom-bar' + (isToday ? '' : ' right-only');
+    // O / X 칸
+    const tdOx = document.createElement('td');
+    const oxWrap = document.createElement('div');
+    oxWrap.className = 'ox-cell-wrap';
 
-    if (isToday) {
-      const toggleGroup = document.createElement('div');
-      toggleGroup.className = 'toggle-group';
-
-      const btnO = document.createElement('button');
-      btnO.type = 'button';
-      btnO.className = 'toggle-btn toggle-o' + (item.status === 'O' ? ' active-o' : '');
-      btnO.textContent = '⭕️ 완료';
-      btnO.addEventListener('click', () => {
-        if (card.dataset.status === 'O') {
-          card.dataset.status = '';
-          btnO.classList.remove('active-o');
-        } else {
-          card.dataset.status = 'O';
-          btnO.classList.add('active-o');
-          btnX.classList.remove('active-x');
-        }
-        saveDraft();
-      });
-
-      const btnX = document.createElement('button');
-      btnX.type = 'button';
-      btnX.className = 'toggle-btn toggle-x' + (item.status === 'X' ? ' active-x' : '');
-      btnX.textContent = '❌ 미완료';
-      btnX.addEventListener('click', () => {
-        if (card.dataset.status === 'X') {
-          card.dataset.status = '';
-          btnX.classList.remove('active-x');
-        } else {
-          card.dataset.status = 'X';
-          btnX.classList.add('active-x');
-          btnO.classList.remove('active-o');
-        }
-        saveDraft();
-      });
-
-      toggleGroup.appendChild(btnO);
-      toggleGroup.appendChild(btnX);
-      bottomBar.appendChild(toggleGroup);
-    }
-
-    const delBtn = document.createElement('button');
-    delBtn.type = 'button';
-    delBtn.className = 'delete-item-btn';
-    delBtn.textContent = '✕ 삭제';
-    delBtn.addEventListener('click', () => {
-      const parent = card.parentElement;
-      card.remove();
-      if (parent && parent.children.length === 0) {
-        addScheduleCard(parent.id, { time: '', text: '', status: '' }, isToday);
+    const btnO = document.createElement('button');
+    btnO.type = 'button';
+    btnO.className = 'ox-btn ox-o' + (item.status === 'O' ? ' active-o' : '');
+    btnO.textContent = 'o';
+    btnO.addEventListener('click', () => {
+      if (tr.dataset.status === 'O') {
+        tr.dataset.status = '';
+        btnO.classList.remove('active-o');
+      } else {
+        tr.dataset.status = 'O';
+        btnO.classList.add('active-o');
+        btnX.classList.remove('active-x');
       }
       saveDraft();
     });
 
-    bottomBar.appendChild(delBtn);
+    const btnX = document.createElement('button');
+    btnX.type = 'button';
+    btnX.className = 'ox-btn ox-x' + (item.status === 'X' ? ' active-x' : '');
+    btnX.textContent = 'x';
+    btnX.addEventListener('click', () => {
+      if (tr.dataset.status === 'X') {
+        tr.dataset.status = '';
+        btnX.classList.remove('active-x');
+      } else {
+        tr.dataset.status = 'X';
+        btnX.classList.add('active-x');
+        btnO.classList.remove('active-o');
+      }
+      saveDraft();
+    });
 
-    card.appendChild(timeField);
-    card.appendChild(textField);
-    card.appendChild(bottomBar);
+    oxWrap.appendChild(btnO);
+    oxWrap.appendChild(btnX);
+    tdOx.appendChild(oxWrap);
 
-    return card;
+    // 삭제 칸
+    const tdDel = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'del-cell-btn';
+    delBtn.innerHTML = '&times;';
+    delBtn.addEventListener('click', () => {
+      tr.remove();
+      if (todayBody.children.length === 0) {
+        todayBody.appendChild(createTodayRow({ time: '', text: '', status: '' }));
+      }
+      saveDraft();
+    });
+    tdDel.appendChild(delBtn);
+
+    tr.appendChild(tdTime);
+    tr.appendChild(tdText);
+    tr.appendChild(tdOx);
+    tr.appendChild(tdDel);
+
+    return tr;
   }
 
-  function addScheduleCard(containerId, item = { time: '', text: '', status: '' }, isToday = true) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const card = createScheduleCard(item, isToday);
-    container.appendChild(card);
+  // --- 3. 내일 일정 표 행 생성 (시작 | ~ | 종료 | 내용 | ✕) ---
+  function createTomorrowRow(item = { start: '', end: '', text: '' }) {
+    const tr = document.createElement('tr');
+
+    // 시작 시간
+    const tdStart = document.createElement('td');
+    const startInput = document.createElement('input');
+    startInput.type = 'text';
+    startInput.className = 'cell-input tomorrow-start-input';
+    startInput.value = item.start || '';
+    startInput.addEventListener('input', saveDraft);
+    tdStart.appendChild(startInput);
+
+    // 물결 구분자
+    const tdTilde = document.createElement('td');
+    tdTilde.className = 'cell-tilde';
+    tdTilde.textContent = '~';
+
+    // 종료 시간
+    const tdEnd = document.createElement('td');
+    const endInput = document.createElement('input');
+    endInput.type = 'text';
+    endInput.className = 'cell-input tomorrow-end-input';
+    endInput.value = item.end || '';
+    endInput.addEventListener('input', saveDraft);
+    tdEnd.appendChild(endInput);
+
+    // 내용 칸
+    const tdText = document.createElement('td');
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'cell-input text-left tomorrow-text-input';
+    textInput.value = item.text || '';
+    textInput.addEventListener('input', saveDraft);
+    tdText.appendChild(textInput);
+
+    // 삭제 칸
+    const tdDel = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'del-cell-btn';
+    delBtn.innerHTML = '&times;';
+    delBtn.addEventListener('click', () => {
+      tr.remove();
+      if (tomorrowBody.children.length === 0) {
+        tomorrowBody.appendChild(createTomorrowRow({ start: '', end: '', text: '' }));
+      }
+      saveDraft();
+    });
+    tdDel.appendChild(delBtn);
+
+    tr.appendChild(tdStart);
+    tr.appendChild(tdTilde);
+    tr.appendChild(tdEnd);
+    tr.appendChild(tdText);
+    tr.appendChild(tdDel);
+
+    return tr;
   }
 
-  function getScheduleData(containerId, isToday) {
-    const container = document.getElementById(containerId);
-    if (!container) return [];
-    const cards = container.querySelectorAll('.schedule-item-card');
+  addTodayBtn.addEventListener('click', () => {
+    todayBody.appendChild(createTodayRow({ time: '', text: '', status: '' }));
+  });
+
+  addTomorrowBtn.addEventListener('click', () => {
+    tomorrowBody.appendChild(createTomorrowRow({ start: '', end: '', text: '' }));
+  });
+
+  // 데이터 추출 헬퍼
+  function getTodayScheduleData() {
+    const rows = todayBody.querySelectorAll('tr');
     const list = [];
-    cards.forEach(card => {
-      const time = card.querySelector('.schedule-time')?.value || '';
-      const text = card.querySelector('.schedule-text')?.value || '';
-      const status = isToday ? (card.dataset.status || '') : '';
-      if (time.trim() || text.trim() || status) {
-        list.push({ time: time.trim(), text: text.trim(), status });
+    rows.forEach(tr => {
+      const time = tr.querySelector('.today-time-input')?.value.trim() || '';
+      const text = tr.querySelector('.today-text-input')?.value.trim() || '';
+      const status = tr.dataset.status || '';
+      if (time || text || status) {
+        list.push({ time, text, status });
       }
     });
     return list;
   }
 
-  function formatScheduleText(items, isToday) {
-    if (!items || items.length === 0) return '';
-    const lines = items
-      .map(it => {
-        const time = (it.time || '').trim();
-        const text = (it.text || '').trim();
-        if (!time && !text) return '';
-        let line = `${time} ${text}`.trim();
-        if (isToday) {
-          if (it.status === 'O') line += ' ⭕️';
-          else if (it.status === 'X') line += ' ❌';
-        }
-        return line;
-      })
-      .filter(l => l.length > 0);
-    return lines.join('\n');
+  function getTomorrowScheduleData() {
+    const rows = tomorrowBody.querySelectorAll('tr');
+    const list = [];
+    rows.forEach(tr => {
+      const start = tr.querySelector('.tomorrow-start-input')?.value.trim() || '';
+      const end = tr.querySelector('.tomorrow-end-input')?.value.trim() || '';
+      const text = tr.querySelector('.tomorrow-text-input')?.value.trim() || '';
+      if (start || end || text) {
+        list.push({ start, end, text });
+      }
+    });
+    return list;
   }
 
-  addTodayBtn.addEventListener('click', () => {
-    addScheduleCard('today-schedule-list', { time: '', text: '', status: '' }, true);
-  });
-
-  addTomorrowBtn.addEventListener('click', () => {
-    addScheduleCard('tomorrow-schedule-list', { time: '', text: '' }, false);
-  });
-
-  // --- 3. 날짜별 스케줄 로드 & 전날 계획 연동 로직 ---
+  // --- 4. 날짜별 스케줄 로드 & 전날 계획 연동 로직 ---
   function loadScheduleForDateKey(targetDateKey) {
-    todayList.innerHTML = '';
-    tomorrowList.innerHTML = '';
+    todayBody.innerHTML = '';
+    tomorrowBody.innerHTML = '';
 
-    const savedToday = localStorage.getItem('today_schedule_' + targetDateKey);
-    const savedTomorrow = localStorage.getItem('tomorrow_schedule_' + targetDateKey);
+    const savedToday = localStorage.getItem('table_today_' + targetDateKey);
+    const savedTomorrow = localStorage.getItem('table_tomorrow_' + targetDateKey);
 
+    // 오늘 일정 복원
     if (savedToday) {
       try {
         const list = JSON.parse(savedToday);
         if (Array.isArray(list) && list.length > 0) {
-          list.forEach(it => addScheduleCard('today-schedule-list', it, true));
+          list.forEach(it => todayBody.appendChild(createTodayRow(it)));
         } else {
-          addScheduleCard('today-schedule-list', { time: '', text: '', status: '' }, true);
+          todayBody.appendChild(createTodayRow());
         }
       } catch (e) {
-        addScheduleCard('today-schedule-list', { time: '', text: '', status: '' }, true);
+        todayBody.appendChild(createTodayRow());
       }
     } else {
-      // 전날 내일 계획 확인 후 자동 로드
+      // 전날 '내일 일정' 확인 후 오늘 일정으로 자동 로드
       const yesterdayKey = getYesterdayDateKey(targetDateKey);
-      const prevTomorrow = localStorage.getItem('tomorrow_schedule_' + yesterdayKey);
+      const prevTomorrow = localStorage.getItem('table_tomorrow_' + yesterdayKey);
       let loadedFromYesterday = false;
 
       if (prevTomorrow) {
@@ -249,7 +284,13 @@ document.addEventListener('DOMContentLoaded', () => {
           const list = JSON.parse(prevTomorrow);
           if (Array.isArray(list) && list.length > 0) {
             list.forEach(it => {
-              addScheduleCard('today-schedule-list', { time: it.time || '', text: it.text || '', status: '' }, true);
+              // 시작시간과 종료시간 결합 (예: 12:00~13:00)
+              const timeCombined = (it.start && it.end) ? `${it.start}~${it.end}` : (it.start || it.end || '');
+              todayBody.appendChild(createTodayRow({
+                time: timeCombined,
+                text: it.text || '',
+                status: ''
+              }));
             });
             loadedFromYesterday = true;
             showToast('전날 계획했던 일정을 오늘 일정으로 불러왔습니다 ✨');
@@ -258,27 +299,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       if (!loadedFromYesterday) {
-        addScheduleCard('today-schedule-list', { time: '', text: '', status: '' }, true);
+        todayBody.appendChild(createTodayRow());
       }
     }
 
+    // 내일 일정 복원
     if (savedTomorrow) {
       try {
         const list = JSON.parse(savedTomorrow);
         if (Array.isArray(list) && list.length > 0) {
-          list.forEach(it => addScheduleCard('tomorrow-schedule-list', it, false));
+          list.forEach(it => tomorrowBody.appendChild(createTomorrowRow(it)));
         } else {
-          addScheduleCard('tomorrow-schedule-list', { time: '', text: '' }, false);
+          tomorrowBody.appendChild(createTomorrowRow());
         }
       } catch (e) {
-        addScheduleCard('tomorrow-schedule-list', { time: '', text: '' }, false);
+        tomorrowBody.appendChild(createTomorrowRow());
       }
     } else {
-      addScheduleCard('tomorrow-schedule-list', { time: '', text: '' }, false);
+      tomorrowBody.appendChild(createTomorrowRow());
     }
   }
 
-  // --- 4. 자동 임시 저장 & 복원 ---
+  // --- 5. 자동 임시 저장 & 복원 ---
   function saveDraft() {
     const targetDateKey = parseDateKey(dateInput.value, calCurrentYear);
     const draftData = {};
@@ -288,16 +330,16 @@ document.addEventListener('DOMContentLoaded', () => {
       if (el) draftData[id] = el.value;
     });
 
-    const todayItems = getScheduleData('today-schedule-list', true);
-    const tomorrowItems = getScheduleData('tomorrow-schedule-list', false);
+    const todayItems = getTodayScheduleData();
+    const tomorrowItems = getTomorrowScheduleData();
 
-    draftData['todaySchedule'] = todayItems;
-    draftData['tomorrowSchedule'] = tomorrowItems;
+    draftData['tableToday'] = todayItems;
+    draftData['tableTomorrow'] = tomorrowItems;
     draftData['dateKey'] = targetDateKey;
 
     localStorage.setItem('diary_draft', JSON.stringify(draftData));
-    localStorage.setItem('today_schedule_' + targetDateKey, JSON.stringify(todayItems));
-    localStorage.setItem('tomorrow_schedule_' + targetDateKey, JSON.stringify(tomorrowItems));
+    localStorage.setItem('table_today_' + targetDateKey, JSON.stringify(todayItems));
+    localStorage.setItem('table_tomorrow_' + targetDateKey, JSON.stringify(tomorrowItems));
 
     const timeStr = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
     saveStatusText.textContent = `저장됨 (${timeStr})`;
@@ -326,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadScheduleForDateKey(currentKey);
   }
 
-  // --- 5. Habit Tracker 달력 시스템 ---
+  // --- 6. Habit Tracker 달력 ---
   let calCurrentYear = now.getFullYear();
   let calCurrentMonth = now.getMonth();
 
@@ -424,7 +466,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCalendar(calCurrentYear, calCurrentMonth);
   setInterval(saveDraft, 5000);
 
-  // --- 6. 작성 완료 및 복사 (원래 텍스트 템플릿 유지) ---
+  // --- 7. 작성 완료 및 복사 (원래 양식 완벽 유지) ---
   const copyBtn = document.getElementById('copy-btn');
   const resetBtn = document.getElementById('reset-btn');
 
@@ -435,18 +477,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const date = dateInput.value.trim() || formatDateBadge(now);
     const v = (id) => document.getElementById(id)?.value || '';
 
-    const todayItems = getScheduleData('today-schedule-list', true);
-    const tomorrowItems = getScheduleData('tomorrow-schedule-list', false);
+    // 오늘 일정 문자열 포맷
+    const todayItems = getTodayScheduleData();
+    const todayLines = todayItems.map(it => {
+      let line = `${it.time} ${it.text}`.trim();
+      if (it.status === 'O') line += ' ⭕️';
+      else if (it.status === 'X') line += ' ❌';
+      return line;
+    }).filter(l => l.length > 0).join('\n');
 
-    const todayScheduleText = formatScheduleText(todayItems, true);
-    const tomorrowScheduleText = formatScheduleText(tomorrowItems, false);
+    // 내일 일정 문자열 포맷
+    const tomorrowItems = getTomorrowScheduleData();
+    const tomorrowLines = tomorrowItems.map(it => {
+      const timeCombined = (it.start && it.end) ? `${it.start}~${it.end}` : (it.start || it.end || '');
+      return `${timeCombined} ${it.text}`.trim();
+    }).filter(l => l.length > 0).join('\n');
 
     const formattedText = `🪽${name}의 스신말기🪽 ${date}
 🤍step.1 스케줄
 ⏰오늘(⭕️❌)
-${todayScheduleText}
+${todayLines}
 ⏰내일
-${tomorrowScheduleText}
+${tomorrowLines}
 ∞----------------------------𓏲𓎨ෆ ̖́-
 🤍step.2 미디어 디톡스
 ▫️오늘 사용량
@@ -525,13 +577,13 @@ ${v('prayer-content')}
       const targetDateKey = parseDateKey(dateInput.value, calCurrentYear);
       
       localStorage.removeItem('diary_draft');
-      localStorage.removeItem('today_schedule_' + targetDateKey);
-      localStorage.removeItem('tomorrow_schedule_' + targetDateKey);
+      localStorage.removeItem('table_today_' + targetDateKey);
+      localStorage.removeItem('table_tomorrow_' + targetDateKey);
 
-      todayList.innerHTML = '';
-      tomorrowList.innerHTML = '';
-      addScheduleCard('today-schedule-list', { time: '', text: '', status: '' }, true);
-      addScheduleCard('tomorrow-schedule-list', { time: '', text: '' }, false);
+      todayBody.innerHTML = '';
+      tomorrowBody.innerHTML = '';
+      todayBody.appendChild(createTodayRow());
+      tomorrowBody.appendChild(createTomorrowRow());
 
       saveStatusText.textContent = '초기화됨';
       showToast('내용이 초기화되었습니다.');
